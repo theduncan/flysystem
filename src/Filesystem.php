@@ -395,4 +395,30 @@ class Filesystem implements FilesystemInterface
             throw new FileExistsException($path);
         }
     }
+    
+        /**
+     * Returns hash value of given File using supplied hash algorithm
+     *
+     * @param string $path
+     * @param string $algo any algorithm supported by hash()
+     * 
+     * @return string|bool
+     * 
+     * @throws InvalidArgumentException
+     */
+
+    public function hash($path, $algo = 'sha1')
+    {
+        if (!in_array($algo, hash_algos())) {
+            throw new \InvalidArgumentException('Hash algorithm ' . $algo . ' is not supported');
+        }
+        $stream = $this->readStream($path);
+        if ($stream === false) {
+            return false;
+        }
+        $hc = hash_init($algo);
+        hash_update_stream($hc, $stream);
+        return hash_final($hc);
+    }
+
 }
